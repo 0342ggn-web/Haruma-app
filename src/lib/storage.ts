@@ -148,7 +148,7 @@ export async function uploadFile(key: CryptoKey, file: File): Promise<StoredFile
 
   const { data, error: insErr } = await supabase
     .from("files")
-    .insert({
+    .insert({user_id: userld,
       name_cipher: nameEnc.cipherB64,
       name_iv: nameEnc.ivB64,
       mime_cipher: mimeEnc?.cipherB64 ?? null,

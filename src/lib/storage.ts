@@ -118,8 +118,8 @@ export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
         createdAt: row.created_at,
         storagePath: row.storage_path,
       });
-    } catch {
-      // skip rows that fail to decrypt (corrupted or wrong key)
+    } catch (e) {
+      console.error("Error al descifrar el archivo:", e);
     }
   }
   return files;

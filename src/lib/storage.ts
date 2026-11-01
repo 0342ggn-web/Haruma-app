@@ -17,7 +17,7 @@ export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
     try {
       const name = await decryptString(key, row.name_cipher, row.name_iv);
       const mime = row.mime_cipher
-        ? await decryptString(key, row.mime_cipher, row.name_iv)
+        ? await decryptString(key, row.mime_cipher, row.content_iv) //
         : null;
 
       files.push({

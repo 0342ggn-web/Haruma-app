@@ -10,6 +10,7 @@ export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
     console.error("Error consultando la tabla files:", error);
     throw error;
   }
+  console.log("Datos brutos desde Supabase:", data);
   if (!data) return [];
 
   const files: StoredFile[] = [];
@@ -17,7 +18,7 @@ export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
     try {
       const name = await decryptString(key, row.name_cipher, row.name_iv);
       const mime = row.mime_cipher
-        ? await decryptString(key, row.mime_cipher, row.content_iv) //
+        ? await decryptString(key, row.mime_cipher, row.content_iv) 
         : null;
 
       files.push({

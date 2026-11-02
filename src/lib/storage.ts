@@ -24,22 +24,40 @@ interface FileRow {
 }
 
 export async function vaultExists(): Promise<boolean> {
-  const { count, error } = await supabase
-    .from("files")
-    .select("*", { count: "exact", head: true });
+  try {
+    const { count, error } = await supabase
+      .from("files")
+      .select("*", { count: "exact", head: true });
 
-  if (error) return false;
-  return (count ?? 0) > 0;
+    if (error) {
+      console.error("Error comprobando existencia de la bóveda:", error);
+      return false;
+    }
+    return (count ?? 0) > 0;
+  } catch (e) {
+    console.error("Excepción en vaultExists:", e);
+    return false;
+  }
 }
 
 export async function setupVault(password: string): Promise<VaultKey> {
-  const key = await deriveKey(password);
-  return key;
+  try {
+    const key = await deriveKey(password);
+    return key;
+  } catch (e) {
+    console.error("Error en setupVault:", e);
+    throw e;
+  }
 }
 
 export async function unlockVault(password: string): Promise<VaultKey> {
-  const key = await deriveKey(password);
-  return key;
+  try {
+    const key = await deriveKey(password);
+    return key;
+  } catch (e) {
+    console.error("Error en unlockVault:", e);
+    throw e;
+  }
 }
 
 export async function downloadFile(storagePath: string): Promise<Blob> {
@@ -62,7 +80,7 @@ export async function listFiles(key: VaultKey): Promise<StoredFile[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error consultando la tabla:", error);
+    console.error("Error consultando la tabla de archivos:", error);
     throw error;
   }
 

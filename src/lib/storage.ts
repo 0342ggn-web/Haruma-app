@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { decryptString, encryptData, deriveKey, type CryptoKey } from "./crypto";
+import { decryptString, deriveKey, type CryptoKey } from "./crypto";
 
 export interface StoredFile {
   id: string;
@@ -33,21 +33,20 @@ export async function vaultExists(): Promise<boolean> {
 }
 
 export async function setupVault(password: string): Promise<CryptoKey> {
-  // Deriva la clave maestra a partir de la contraseña introducida por el usuario
+  // Deriva la clave y valida la creación de la caja fuerte
   const key = await deriveKey(password);
+  
+  // Opcional: comprobamos si podemos escribir o verificar la conexión a la tabla
+  const { error } = await supabase.from("files").select("id").limit(1);
+  if (error && error.code !== "PGRST116") {
+    console.error("Error al inicializar la caja fuerte:", error);
+  }
+
   return key;
 }
 
 export async function unlockVault(password: string): Promise<CryptoKey> {
-  // Desbloquea derivando la clave y comprobando acceso
   const key = await deriveKey(password);
-  const exists = await vaultExists();
-  
-  if (!exists) {
-    // Si la caja fuerte está vacía, permite inicializarla
-    return key;
-  }
-  
   return key;
 }
 

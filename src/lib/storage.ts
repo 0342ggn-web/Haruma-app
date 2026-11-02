@@ -40,6 +40,19 @@ export async function unlockVault(): Promise<CryptoKey> {
   throw new Error("Contraseña incorrecta o error al desbloquear la caja fuerte.");
 }
 
+export async function downloadFile(storagePath: string): Promise<Blob> {
+  const { data, error } = await supabase.storage
+    .from("vault")
+    .download(storagePath);
+
+  if (error) {
+    console.error("Error descargando el archivo:", error);
+    throw error;
+  }
+
+  return data;
+}
+
 export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
   const { data, error } = await supabase
     .from("files")

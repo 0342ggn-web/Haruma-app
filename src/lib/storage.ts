@@ -25,14 +25,16 @@ interface FileRow {
 
 export async function vaultExists(): Promise<boolean> {
   try {
+    console.log("Comprobando si la bóveda existe...");
     const { count, error } = await supabase
       .from("files")
       .select("*", { count: "exact", head: true });
 
     if (error) {
-      console.error("Error comprobando existencia de la bóveda:", error);
+      console.error("Error en vaultExists:", error);
       return false;
     }
+    console.log("VaultExists resultado count:", count);
     return (count ?? 0) > 0;
   } catch (e) {
     console.error("Excepción en vaultExists:", e);
@@ -42,20 +44,24 @@ export async function vaultExists(): Promise<boolean> {
 
 export async function setupVault(password: string): Promise<VaultKey> {
   try {
+    console.log("Iniciando setupVault...");
     const key = await deriveKey(password);
+    console.log("Clave derivada con éxito en setupVault");
     return key;
   } catch (e) {
-    console.error("Error en setupVault:", e);
+    console.error("Error crítico en setupVault:", e);
     throw e;
   }
 }
 
 export async function unlockVault(password: string): Promise<VaultKey> {
   try {
+    console.log("Iniciando unlockVault...");
     const key = await deriveKey(password);
+    console.log("Clave derivada con éxito en unlockVault");
     return key;
   } catch (e) {
-    console.error("Error en unlockVault:", e);
+    console.error("Error crítico en unlockVault:", e);
     throw e;
   }
 }

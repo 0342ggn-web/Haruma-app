@@ -25,16 +25,20 @@ interface FileRow {
 
 export async function vaultExists(): Promise<boolean> {
   try {
-    console.log("Comprobando si la bóveda existe...");
+    // Si se marcó localmente como creada en este navegador, evitamos el bloqueo de tabla vacía
+    if (typeof window !== "undefined" && localStorage.getItem("haruma_vault_ready") === "true") {
+      return true;
+    }
+
     const { count, error } = await supabase
       .from("files")
       .select("*", { count: "exact", head: true });
 
     if (error) {
-      console.error("Error en vaultExists:", error);
+      console.error("Error comprobando bóveda:", error);
       return false;
     }
-    console.log("VaultExists resultado count:", count);
+
     return (count ?? 0) > 0;
   } catch (e) {
     console.error("Excepción en vaultExists:", e);
@@ -44,24 +48,31 @@ export async function vaultExists(): Promise<boolean> {
 
 export async function setupVault(password: string): Promise<VaultKey> {
   try {
-    console.log("Iniciando setupVault...");
     const key = await deriveKey(password);
-    console.log("Clave derivada con éxito en setupVault");
+    
+    // Marcamos la bóveda como lista para evitar que se quede bloqueada en el bucle
+    if (typeof window !== "undefined") {
+      localStorage.setItem("haruma_vault_ready", "true");
+    }
+
     return key;
   } catch (e) {
-    console.error("Error crítico en setupVault:", e);
+    console.error("Error en setupVault:", e);
     throw e;
   }
 }
 
 export async function unlockVault(password: string): Promise<VaultKey> {
   try {
-    console.log("Iniciando unlockVault...");
     const key = await deriveKey(password);
-    console.log("Clave derivada con éxito en unlockVault");
+    
+    if (typeof window !== "undefined") {
+      localStorage.setItem("haruma_vault_ready", "true");
+    }
+
     return key;
   } catch (e) {
-    console.error("Error crítico en unlockVault:", e);
+    console.error("Error en unlockVault:", e);
     throw e;
   }
 }

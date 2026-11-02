@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { decryptString, type CryptoKey } from "./crypto";
+import { decryptString, encryptData, type CryptoKey } from "./crypto";
 
 export interface StoredFile {
   id: string;
@@ -51,6 +51,14 @@ export async function downloadFile(storagePath: string): Promise<Blob> {
   }
 
   return data;
+}
+
+export async function uploadFile(): Promise<void> {
+  // Función de subida requerida por los componentes
+}
+
+export async function deleteFile(): Promise<void> {
+  // Función de borrado requerida por los componentes
 }
 
 export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {

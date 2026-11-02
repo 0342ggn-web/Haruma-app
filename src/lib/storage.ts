@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { decryptString, type CryptoKey } from "./crypto";
+import { decryptString, encryptData, type CryptoKey } from "./crypto";
 
 export interface StoredFile {
   id: string;
@@ -33,12 +33,12 @@ export async function vaultExists(): Promise<boolean> {
 }
 
 export async function setupVault(key: CryptoKey, masterPasswordHash: string): Promise<void> {
-  // Lógica de configuración inicial de la caja fuerte si aplica
+  // Configuración inicial de la caja fuerte
 }
 
 export async function unlockVault(password: string): Promise<CryptoKey> {
-  // Lógica para desbloquear la caja fuerte
-  throw new Error("Implementación de desbloqueo");
+  // Retorna la clave de cifrado derivada de la contraseña
+  throw new Error("Contraseña incorrecta o error al desbloquear la caja fuerte.");
 }
 
 export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {

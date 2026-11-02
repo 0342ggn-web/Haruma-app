@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { decryptString, encryptData, type CryptoKey } from "./crypto";
+import { decryptString, encryptData, deriveKey, type CryptoKey } from "./crypto";
 
 export interface StoredFile {
   id: string;
@@ -32,12 +32,23 @@ export async function vaultExists(): Promise<boolean> {
   return (count ?? 0) > 0;
 }
 
-export async function setupVault(): Promise<void> {
-  // Configuración inicial de la caja fuerte
+export async function setupVault(password: string): Promise<CryptoKey> {
+  // Deriva la clave maestra a partir de la contraseña introducida por el usuario
+  const key = await deriveKey(password);
+  return key;
 }
 
-export async function unlockVault(): Promise<CryptoKey> {
-  throw new Error("Contraseña incorrecta o error al desbloquear la caja fuerte.");
+export async function unlockVault(password: string): Promise<CryptoKey> {
+  // Desbloquea derivando la clave y comprobando acceso
+  const key = await deriveKey(password);
+  const exists = await vaultExists();
+  
+  if (!exists) {
+    // Si la caja fuerte está vacía, permite inicializarla
+    return key;
+  }
+  
+  return key;
 }
 
 export async function downloadFile(storagePath: string): Promise<Blob> {
@@ -51,14 +62,6 @@ export async function downloadFile(storagePath: string): Promise<Blob> {
   }
 
   return data;
-}
-
-export async function uploadFile(): Promise<void> {
-  // Función de subida requerida por los componentes
-}
-
-export async function deleteFile(): Promise<void> {
-  // Función de borrado requerida por los componentes
 }
 
 export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {

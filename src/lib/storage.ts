@@ -1,3 +1,46 @@
+import { supabase } from "./supabase";
+import { decryptString, type CryptoKey } from "./crypto";
+
+export interface StoredFile {
+  id: string;
+  name: string;
+  mime: string | null;
+  size: number;
+  cipherSize: number;
+  createdAt: string;
+  storagePath: string;
+}
+
+interface FileRow {
+  id: string;
+  name_cipher: string;
+  name_iv: string;
+  mime_cipher: string | null;
+  content_iv: string;
+  size: number;
+  cipher_size: number;
+  created_at: string;
+  storage_path: string;
+}
+
+export async function vaultExists(): Promise<boolean> {
+  const { count, error } = await supabase
+    .from("files")
+    .select("*", { count: "exact", head: true });
+
+  if (error) return false;
+  return (count ?? 0) > 0;
+}
+
+export async function setupVault(key: CryptoKey, masterPasswordHash: string): Promise<void> {
+  // Lógica de configuración inicial de la caja fuerte si aplica
+}
+
+export async function unlockVault(password: string): Promise<CryptoKey> {
+  // Lógica para desbloquear la caja fuerte
+  throw new Error("Implementación de desbloqueo");
+}
+
 export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
   const { data, error } = await supabase
     .from("files")

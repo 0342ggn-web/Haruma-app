@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { decryptString, deriveKey, type CryptoKey } from "./crypto";
+import { decryptString, deriveKey, type VaultKey } from "./crypto";
 
 export interface StoredFile {
   id: string;
@@ -32,20 +32,12 @@ export async function vaultExists(): Promise<boolean> {
   return (count ?? 0) > 0;
 }
 
-export async function setupVault(password: string): Promise<CryptoKey> {
-  // Deriva la clave y valida la creación de la caja fuerte
+export async function setupVault(password: string): Promise<VaultKey> {
   const key = await deriveKey(password);
-  
-  // Opcional: comprobamos si podemos escribir o verificar la conexión a la tabla
-  const { error } = await supabase.from("files").select("id").limit(1);
-  if (error && error.code !== "PGRST116") {
-    console.error("Error al inicializar la caja fuerte:", error);
-  }
-
   return key;
 }
 
-export async function unlockVault(password: string): Promise<CryptoKey> {
+export async function unlockVault(password: string): Promise<VaultKey> {
   const key = await deriveKey(password);
   return key;
 }
@@ -63,7 +55,7 @@ export async function downloadFile(storagePath: string): Promise<Blob> {
   return data;
 }
 
-export async function listFiles(key: CryptoKey): Promise<StoredFile[]> {
+export async function listFiles(key: VaultKey): Promise<StoredFile[]> {
   const { data, error } = await supabase
     .from("files")
     .select("id, name_cipher, name_iv, mime_cipher, content_iv, size, cipher_size, created_at, storage_path")

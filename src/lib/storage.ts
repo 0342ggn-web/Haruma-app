@@ -32,12 +32,11 @@ export async function vaultExists(): Promise<boolean> {
   return (count ?? 0) > 0;
 }
 
-export async function setupVault(_key: CryptoKey, _masterPasswordHash: string): Promise<void> {
-  // Configuración inicial completada
+export async function setupVault(): Promise<void> {
+  // Configuración inicial de la caja fuerte
 }
 
-export async function unlockVault(_password: string): Promise<CryptoKey> {
-  // Lógica para desbloquear la caja fuerte
+export async function unlockVault(): Promise<CryptoKey> {
   throw new Error("Contraseña incorrecta o error al desbloquear la caja fuerte.");
 }
 
